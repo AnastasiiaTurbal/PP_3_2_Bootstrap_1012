@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css"  th:href="@{/style.css}">
     <title>Index</title>
     <style>
         body, html {
@@ -316,7 +316,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr> <!--th:each="user, iterStat : ${users}"> -->
+                                <tr>
                                     <td class="align-middle" th:text="${currentUser.getId()}"></td>
                                     <td class="align-middle" th:text="${currentUser.getUsername()}"></td>
                                     <td class="align-middle" th:text="${currentUser.getPassword()}"></td>
@@ -338,57 +338,53 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
-<!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script>
 
+<script>
+    //добавить в data вид операции
+    //вынести заполнение модалки в отдельную функцию (к id элемента добавлять edit или delete)
+    //сделать одно модальное окно для обеих операций?
     $('#userEditDialog').on('shown.bs.modal', function (event) {
         let button = $(event.relatedTarget)
-        let userId = button.data('userid') //возьмет значение, переданное в th:data-userId
-
-        if (userId) {
-            $.get({
-                url: '/api/users/' + userId,
-                success: (data) => {
-                    let modal = $(this)
-                    modal.find('#id-edit').val(data.id)
-                    modal.find('#username-edit').val(data.username)
-                    modal.find('#password-edit').val(data.password)
-                    modal.find('#age-edit').val(data.age)
-                    modal.find('#roles-edit').val(data.roles)
-                },
-                error: (err) => {
-                    alert(err);
-                }
+        let userId = button.data('userid')
+        let modal = $(this)
+        fetch('/api/users/' + userId)
+            .then(response => response.json())
+            .then(data => {
+                modal.find('#id-edit').val(data.id)
+                modal.find('#username-edit').val(data.username)
+                modal.find('#password-edit').val(data.password)
+                modal.find('#age-edit').val(data.age)
+                modal.find('#roles-edit').val(data.roles)
             });
-        }
+    }).on('hidden.bs.modal', function() {
+        [].forEach.call(document.querySelector('#userEditDialog').querySelectorAll('input'), function (el) {
+            el.value = "";
+        })
     })
-
 
     $('#userDeleteDialog').on('shown.bs.modal', function (event) {
         let button = $(event.relatedTarget)
         let userId = button.data('userid')
-        if (userId) {
-            $.get({
-                url: '/api/users/' + userId,
-                success: (data) => {
-                    let modal = $(this)
-                    modal.find('#id-delete').val(data.id)
-                    modal.find('#username-delete').val(data.username)
-                    modal.find('#password-delete').val(data.password)
-                    modal.find('#age-delete').val(data.age)
-                    modal.find('#roles-delete').val(data.roles)
-                },
-                error: (err) => {
-                    alert(err);
-                }
+        let modal = $(this)
+        fetch('/api/users/' + userId)
+            .then(response => response.json())
+            .then(data => {
+                modal.find('#id-delete').val(data.id)
+                modal.find('#username-delete').val(data.username)
+                modal.find('#password-delete').val(data.password)
+                modal.find('#age-delete').val(data.age)
+                modal.find('#roles-delete').val(data.roles)
             });
-        }
+    }).on('hidden.bs.modal', function() {
+        [].forEach.call(document.querySelector('#userDeleteDialog').querySelectorAll('input'), function (el) {
+            el.value = "";
+        })
     })
+
 
 </script>
 
 </body>
-
 </html>

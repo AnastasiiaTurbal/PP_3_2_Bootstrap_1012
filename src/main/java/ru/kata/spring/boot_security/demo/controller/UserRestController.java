@@ -6,11 +6,11 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserResource {
+public class UserRestController {
 
     private final UserService userService;
 
-    public UserResource(UserService userService) {
+    public UserRestController(UserService userService) {
         this.userService = userService;
     }
 
@@ -19,8 +19,4 @@ public class UserResource {
         return userService.showUser(userId);
     }
 
-    @PostMapping()
-    public void update(@RequestBody User user) {
-        userService.updateUser(user);
-    }
 }
